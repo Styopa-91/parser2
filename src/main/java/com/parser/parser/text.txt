@@ -1,0 +1,25 @@
+crimea  krym
+vinnytsia  vinnycya
+volyn
+dnipropetrovsk  dnipro
+donetsk
+zhytomyr
+zakarpattia   zakarpattya
+zaporizhia  zaporizhzhya
+ivanofrankivsk  ivano-frankivsk
+kiev  kyiv
+kirovohrad  kropyvnytskyi
+luhansk  lugansk
+lviv
+mykolaiv
+odessa  odesa
+poltava
+rivne
+sumy
+ternopil
+kharkiv
+kherson
+khmelnytskyi
+cherkasy
+chernihiv
+chernivtsi
