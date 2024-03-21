@@ -204,7 +204,7 @@ public class ParserApplication {
                 agrarian.setTitle(paragraph.select("h3").text());
                 agrarian.setAddress(paragraph.select("p").get(0).text());
                 agrarian.setHead(paragraph.select("p").get(1).getElementsByIndexEquals(1).text());
-
+                boolean f = false;
                 String sells2 = paragraph.select("p").get(2).getElementsByIndexEquals(1).text();
                 String sells1 = sells2.replaceAll("\\*", "");
                 String sells = sells1.replaceAll("\\?", ",");
@@ -213,93 +213,273 @@ public class ParserApplication {
                 while (mSells.find()) {
                     String resS= "";
                     if (!mSells.group().trim().isEmpty()) {
-                        resS =mSells.group().trim();
+                        resS =mSells.group().trim().toLowerCase();
                     } else {
-                        resS = mSells.group();
+                        resS = mSells.group().toLowerCase();
                     }
                     if (resS.isEmpty()) continue;
-                    checkEnumType(resS);
-//
-//                    Рослинництво - зернових, технічних, кормових, овочевих, баштанних культур і картоплі, садівництво, виноградарство і квіткарство.
-//
-//                    Тваринництво! - скотарство, свинарство, вівчарство, птахівництво, рибництво, бджільництво та шовківництво. + кормова база
-//
-//                    Харчова промисловсть(основні) - Цукрова Борошномельна М'ясна Молочна Хлібопекарська Маслоробна Кондитерська Спиртова Макаронна
-//                                                    Пивоварна Рибна Виноробна Круп'яна Консервна Тютюнова.
-
-
-                    Pattern itemSellsPattern1 = Pattern.compile(".*зерн.*|.*пшен.*|.*пшон.*|соняшник|подсолнечник|.*жит.*|жыт|ячме.*|ячмі.*|греч.*|просо|рипак|ріпак|рапс|куку.*|кормові|комбікорми|овес|кукуру.*|технічні|технические|рожь|крупы|крупи|зенові|елеватор|силос|сіно|цукров.*|гірчи.*", Pattern.CASE_INSENSITIVE);
+//                    checkEnumType(resS);
+                    Pattern itemSellsPattern1 = Pattern.compile("Рослинництво.*|рослинництв.*|растени.*|растериеводство|росл.*|хвоя|хвой.*|.*насінн.*|.*ландшафт.*|.*семен.*|семечки|сорго|.*ліан.*|.*лиан.*|киви|теплиц.*|тепличн.*|.*декоратив.*|.*декоритив.*|.*коренепл.*|.*корнепл.*|конопля|скловолокно|.*однорічн.*|.*дворічн.*|.*багаторічн.*|кореандр|коріандр|кориандр|посівн.* матеріал.*|насыння|.*лікарськ.*|.*трави.*|сосна.*|дуб|акація|ківі|.*отруби.*|післяурожайна.*|.*землеробство|.*вирщування с/г культур.*|швидкорастучі та якісні породи дерев", Pattern.CASE_INSENSITIVE);
                     Matcher itemSellsMatcher1 = itemSellsPattern1.matcher(resS);
-                    Pattern itemSellsPattern2 = Pattern.compile(".*твар.*|.*Твар.*|вівц.*|вівчарство|овц.*|Овц.*|баран.*|коров.*|коні|телят.*|Телят.*|свин.*|Свин.*|животнов.*|ВРХ|КРС|скотарст.*|худоб.*|зоопарк.*|овец.*|буйволи|молок.*|Молок.*|молоч.*|Молоч.*|мисливство|.*птиця|птиц.*|птахівн.*|перепілк.*|куре.*|курк.*|курч.*|бдж.*");
+                    Pattern itemSellsPattern2 = Pattern.compile(".*зерн.*|.*пшен.*|.*пшон.*|.*жит.*|жыт|ячм.*|греч.*|овес|просо|рожь|куку.*|кукру.*|бобов.*|бобві|боби|квасоля|соя.*|сої|сою|чечевица|сочевиц.*|горох|зенові|елеватор|рис|злак.*|висів.*|.*озим.*|ярих|маис|маїс|тритикале|фасоль|вівса", Pattern.CASE_INSENSITIVE);
                     Matcher itemSellsMatcher2 = itemSellsPattern2.matcher(resS);
-                    Pattern itemSellsPattern3 = Pattern.compile("риба|рыба|Риба|Рыба|рибу|Рибу|рибни.*|Рибни.*");
+                    Pattern itemSellsPattern3 = Pattern.compile("технічн.*|технически.*|комбікорми|корм.*|жмих|цукровий буряк|цукрові буряки|цукровий завод|.*олійн.*|.*масляничн.*|.*маслянічн.*|.*маслич.*|семечка|подсолн.*|.*сонячни.*|.*соняшни.*|рицина|рипак|рапс|ріпак|суріпа|рижій|гірчи.*|.*горчи.*|мак|кунжут|арахіс|перила|лялеманція|сафлор|ефіроолійн.*|коріандр|кмин|м'ята|шавлія|лаванда|фенхель|аніс|прядивні|льон|лен|коноплі|бавовник|силос|сіно|сено|солома|люцерн.*|еспарцет|.*рижій.*|.*рижію.*|суданка", Pattern.CASE_INSENSITIVE);
                     Matcher itemSellsMatcher3 = itemSellsPattern3.matcher(resS);
-                    Pattern itemSellsPattern4 = Pattern.compile("Рослинництво.*|рослинництв.*|растениев*|растериеводство|росл.*|хвоя");
+                    Pattern itemSellsPattern4 = Pattern.compile("кормові|макух.*|жмих.*|жмых.*", Pattern.CASE_INSENSITIVE);
                     Matcher itemSellsMatcher4 = itemSellsPattern4.matcher(resS);
-                    Pattern itemSellsPattern5 = Pattern.compile("м'ясо|мясо|Мясо|М'ясо|М’ясо|м’ясо|м\"ясо|Ковбас.*|ковбас.*|Ялович.*|ялович.*|ліверн.*|сосиски|сардельки|м'ясн.*");
+                    Pattern itemSellsPattern5 = Pattern.compile("овоч.*|овощ.*|томат.*|.*помідо.*|помидор.*|карто.*|капус.*|свекл.*|морк.*|огур.*|огір.*|цибул.*|буряк.*|гриб.*|печериці|кабач.*|репа|баклажан.*|лук.*|зелень.*|укроп|петрушка|кинза|шпинат|щавель|руккола|салат|мята|базилик|.*бульбоплод.*|.*перець.*|селера|редиска|картапля|часник|чеснок|редис.*", Pattern.CASE_INSENSITIVE);
                     Matcher itemSellsMatcher5 = itemSellsPattern5.matcher(resS);
-                    Pattern itemSellsPattern6 = Pattern.compile("садівництво|сад.*|Садівництво|Сад.*|Яблуні|яблуні|фрукт.*|Фрукт.*|кавун|овочі|овоч.*|Овоч.*|Овощ.*|овощ.*|Томат.*|томат.*|картоп.*|Картоп.*|капуст.*|Капуст.*|Свекла|свекла|морков.*|Морков.*|огур.*|Огур.*|цибул.*|Цибул.*|буряк.*|Буряк.*|бобові|соя|Соя|горох|Горох|виноград|Виноград|гриб.*|Гриб.*|ягод.*|Ягод.*|клубни.*|Клубни.*|малин.*|Малин.*|суни.*|лохин.*|кісточк.*|Суни.*|Лохин.*|Кісточк.*");
+                    Pattern itemSellsPattern6 = Pattern.compile("кавун.*|диня|дині|дыня|.*арбуз.*|баштан.*|.*бахч.*|тыкв.*", Pattern.CASE_INSENSITIVE);
                     Matcher itemSellsMatcher6 = itemSellsPattern6.matcher(resS);
-                    Pattern itemSellsPattern7 = Pattern.compile("ліс.*|Ліс.*");
+                    Pattern itemSellsPattern7 = Pattern.compile("сад.*|ябл.*|фрукт.*|ягод.*|.*ягід.*|клубни.*|.*полуни.*|лохин.*|поричка.*|ожина|журавлина|чорниця|горобина|ежевика|алича|.*обліп.*|суниц.*|малин.*|смород.*|хмель|хміль|саженцы|кісточк.*|.*косточков.*|плодов.*|плоди|вишн.*|груш.*|земляни.*|сливы|сливу|сливи|.*слива|.*черешн.*|плодівниц.*|.*горіх.*|плоды.*|абрикос|персик|цитрусових|сажанці|кустарники|питомник|аґрус|жимолость|орехи", Pattern.CASE_INSENSITIVE);
                     Matcher itemSellsMatcher7 = itemSellsPattern7.matcher(resS);
-                    Pattern itemSellsPattern8 = Pattern.compile("олія.*|олій.*|Олія.*|Олій.*|консер.*|тютю.*|Консер.*|Тютю.*|пиво|Пиво|мука||");
+                    Pattern itemSellsPattern8 = Pattern.compile("виноград.*|виниград", Pattern.CASE_INSENSITIVE);
                     Matcher itemSellsMatcher8 = itemSellsPattern8.matcher(resS);
-                    boolean f = false;
+                    Pattern itemSellsPattern9 = Pattern.compile("квіт.*|квытыв|рози|розы|цветы|троянди", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher9 = itemSellsPattern9.matcher(resS);
+                    Pattern itemSellsPattern10 = Pattern.compile(".*твар.*|тванинництво|животнов.*|зоопарк.*|мисливство|шерсть|кози|кіз|кроли.*|.*сперм.*|.*крол.*|.*равлик.*|ферма|.*страус.*|звіроловство|.*вовн.*");
+                    Matcher itemSellsMatcher10 = itemSellsPattern10.matcher(resS);
+                    Pattern itemSellsPattern11 = Pattern.compile("скот.*|коров.*|коні|.*коне.*|телят.*|худоб.*|ВРХ|врх|крх|крс|КРС|буйволи|кінний туризм|пасовища|конярство|кіннозаводство|продукція конярства", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher11 = itemSellsPattern11.matcher(resS);
+                    Pattern itemSellsPattern12 = Pattern.compile("свин.*|.*поросят.*|хряки|ландрас.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher12 = itemSellsPattern12.matcher(resS);
+                    Pattern itemSellsPattern13 = Pattern.compile("вівц.*|вівчарств.*|овц.*|баран.*|овец.*|овеч.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher13 = itemSellsPattern13.matcher(resS);
+                    Pattern itemSellsPattern14 = Pattern.compile(".*птиця|птиц.*|пттиця|птах.*|перепілк.*|.*перепеляч.*|куре.*|курк.*|курч.*|.*яйц.*|яєць|інкуба.*|инкубац.*|бролери|бройл.*|уток|гус.*|.*качки.*|.*качок.*|каченят|качині|кури|куря.*|.*пташинниц.*|циплята|звірі", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher14 = itemSellsPattern14.matcher(resS);
+//                    Pattern itemSellsPattern15 = Pattern.compile("ліс.*|Ліс.*");
+//                    Matcher itemSellsMatcher15 = itemSellsPattern15.matcher(resS);
+                    Pattern itemSellsPattern16 = Pattern.compile("бдж.*|мед|пчолосім.*|.*пасіка.*|пчело.*|.*вуликів.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher16 = itemSellsPattern16.matcher(resS);
+                    Pattern itemSellsPattern17 = Pattern.compile(".*харч.*|.*олія.*|.*олії.*|олію|.*круп.*|.*кулинарный.*|соки|.*вода.*|.*воду.*|.*води.*|квас|.*напо.*|чай|жири|оцет|.*пищевое.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher17 = itemSellsPattern17.matcher(resS);
+                    Pattern itemSellsPattern18 = Pattern.compile("м'яс.*|мяс.*|м’яс.*|м\"яс.*|.*м‘яса.*|ковбас.*|ялович.*|ліверн.*|сосиски|сардельки|м'ясн.*|говядина|копченос.*|бекон", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher18 = itemSellsPattern18.matcher(resS);
+                    Pattern itemSellsPattern19 = Pattern.compile(".*риб.*|.*рыб.*|.*ставкове господарство|білого амура|товстолоба|судака|сома|щуки|осетер.*|білуга|стерлядь|севрюга|.*аквакультура.*|морепродукти|.*ракопод.*|.*молюск.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher19 = itemSellsPattern19.matcher(resS);
+                    Pattern itemSellsPattern20 = Pattern.compile(".*борошн.*|мука|муку", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher20 = itemSellsPattern20.matcher(resS);
+                    Pattern itemSellsPattern21 = Pattern.compile("цукор|сахар|.*цукру.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher21 = itemSellsPattern21.matcher(resS);
+                    Pattern itemSellsPattern22 = Pattern.compile("молок.*|молоч.*|.*сири|сир|бринза|вершки|кефір|кумис.*|кумыс", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher22 = itemSellsPattern22.matcher(resS);
+                    Pattern itemSellsPattern23 = Pattern.compile("хліб.*|хлеб.*|пекарня", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher23 = itemSellsPattern23.matcher(resS);
+                    Pattern itemSellsPattern24 = Pattern.compile("масло|масла", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher24 = itemSellsPattern24.matcher(resS);
+                    Pattern itemSellsPattern25 = Pattern.compile("кондитер.*|торт.*|тістеч.*|печив.*|булоч.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher25 = itemSellsPattern25.matcher(resS);
+                    Pattern itemSellsPattern26 = Pattern.compile("спирт.*|.*алкогольн.*|коняк|бренді", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher26 = itemSellsPattern26.matcher(resS);
+                    Pattern itemSellsPattern27 = Pattern.compile("макаро.*|бакалія", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher27 = itemSellsPattern27.matcher(resS);
+                    Pattern itemSellsPattern28 = Pattern.compile("пиво", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher28 = itemSellsPattern28.matcher(resS);
+                    Pattern itemSellsPattern29 = Pattern.compile("вино|вина|винпродукція", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher29 = itemSellsPattern29.matcher(resS);
+                    Pattern itemSellsPattern30 = Pattern.compile("крупи|крупы", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher30 = itemSellsPattern30.matcher(resS);
+                    Pattern itemSellsPattern31 = Pattern.compile("консер.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher31 = itemSellsPattern31.matcher(resS);
+                    Pattern itemSellsPattern32 = Pattern.compile("тютю.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher32 = itemSellsPattern32.matcher(resS);
+                    Pattern itemSellsPattern33 = Pattern.compile("ліс.*|лес|дрова|пиломатеріали|дерево|.*древесина.*|.*столяр.*|.*деревин.*|.*дошка.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher33 = itemSellsPattern33.matcher(resS);
+                    Pattern itemSellsPattern34 = Pattern.compile("змішане сільське господарство|.*сільськогоспод.*|.*выращивания сельскохозяйственных культур|.*виробництво, переробка та реалізація с/г продукції.*|продукція змішаного сільського господар-ства|змішане сільське господар-ство", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher34 = itemSellsPattern34.matcher(resS);
+                    Pattern itemSellsPattern35 = Pattern.compile(".*будів.*|.*кірпіч.*|.*пісок.*|.*піск.*|.*граві.*|глину.*|глина.*|.*каолін.*|.*цегл.*|.*строит.*|.*строительн.*|.*підлогу, матеріали покриття.*|.*Плити труби іншіі вироби із пластмаси.*|.*мебе.*|.*мебл.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher35 = itemSellsPattern35.matcher(resS);
+                    Pattern itemSellsPattern36 = Pattern.compile(".*нафт.*|.*паливо.*|.*пальним.*|.*вугіл.*|.*торговля топливом.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher36 = itemSellsPattern36.matcher(resS);
+                    Pattern itemSellsPattern37 = Pattern.compile(".*засоби.* захисту.*|.*хімі.*|.*добрива.*|.*хімпрод.*|.*удобрени.*|.*сзр.*|.*хім продукти.*|трихограму", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher37 = itemSellsPattern37.matcher(resS);
+                    Pattern itemSellsPattern38 = Pattern.compile(".*інша сфера.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher38 = itemSellsPattern38.matcher(resS);
+                    Pattern itemSellsPattern39 = Pattern.compile(".*транспорт.*|.*перевез.*|подшипники|сальник|ремни|смазки|звездочки|.*машинами.*|.*мащини.*|.*автомоб.*|навантажувачі|.*технік.*|.*трактор.*|.*комбайн.*|.*запчаст.*|сельхоз технику|.*Аренда и лизинг сельскохозяйственной техники и оборудования.*|.*с/х техника.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher39 = itemSellsPattern39.matcher(resS);
+
                     if (itemSellsMatcher1.find()){
-                        agrarian.getSells().add(SellType.ZERNO);
-                        f = true;
-                    }
-                    if (itemSellsMatcher2.find()){
-                        agrarian.getSells().add(SellType.TVARYNNYTSTVO);
-                        f = true;
-                    }
-                    if (itemSellsMatcher3.find()){
-                        agrarian.getSells().add(SellType.RYBA);
-                        f = true;
-                    }
-                    if (itemSellsMatcher4.find()){
                         agrarian.getSells().add(SellType.ROSLYNNYTSTVO);
                         f = true;
                     }
+                    if (itemSellsMatcher2.find()){
+                        agrarian.getSells().add(SellType.ZERNOVI);
+                        f = true;
+                    }
+                    if (itemSellsMatcher3.find()){
+                        agrarian.getSells().add(SellType.TEKHNICHNI);
+                        f = true;
+                    }
+                    if (itemSellsMatcher4.find()){
+                        agrarian.getSells().add(SellType.KORMOVI);
+                        f = true;
+                    }
                     if (itemSellsMatcher5.find()){
-                        agrarian.getSells().add(SellType.MYASO);
+                        agrarian.getSells().add(SellType.OVOCHEVI);
                         f = true;
                     }
                     if (itemSellsMatcher6.find()){
-                        agrarian.getSells().add(SellType.SADIVNYTSTVO);
+                        agrarian.getSells().add(SellType.BASHTANNI);
                         f = true;
                     }
 
                     if (itemSellsMatcher7.find()){
-                        agrarian.getSells().add(SellType.WOOD);
+                        agrarian.getSells().add(SellType.SADIVNYTSTVO);
                         f = true;
                     }
                     if (itemSellsMatcher8.find()){
+                        agrarian.getSells().add(SellType.VYNOGRADARSTVO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher9.find()){
+                        agrarian.getSells().add(SellType.KVITKARSTVO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher10.find()){
+                        agrarian.getSells().add(SellType.TVARYNNYTSTVO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher11.find()){
+                        agrarian.getSells().add(SellType.SKOTARSTVO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher12.find()){
+                        agrarian.getSells().add(SellType.SVYNARSTVO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher13.find()){
+                        agrarian.getSells().add(SellType.VIVCHARSTVO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher14.find()){
+                        agrarian.getSells().add(SellType.PTAKHIVNYTSTVO);
+                        f = true;
+                    }
+//                    if (itemSellsMatcher15.find()){
+//                        agrarian.getSells().add(SellType.RYBNYTSTVO);
+//                        f = true;
+//                    }
+                    if (itemSellsMatcher16.find()){
+                        agrarian.getSells().add(SellType.BJILNYTSTVO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher17.find()){
                         agrarian.getSells().add(SellType.HARCHOVA_PROMYSLOVIST);
                         f = true;
                     }
-                    if (!f){
-                        System.out.println(resS);
+                    if (itemSellsMatcher18.find()){
+                        agrarian.getSells().add(SellType.MYASO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher19.find()){
+                        agrarian.getSells().add(SellType.RYBA);
+                        f = true;
+                    }
+                    if (itemSellsMatcher20.find()){
+                        agrarian.getSells().add(SellType.BOROSHNO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher21.find()){
+                        agrarian.getSells().add(SellType.TSUKOR);
+                        f = true;
+                    }
+                    if (itemSellsMatcher22.find()){
+                        agrarian.getSells().add(SellType.MOLOKO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher23.find()){
+                        agrarian.getSells().add(SellType.HLIB);
+                        f = true;
+                    }
+                    if (itemSellsMatcher24.find()){
+                        agrarian.getSells().add(SellType.MASLO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher25.find()){
+                        agrarian.getSells().add(SellType.KONDYTERSKA);
+                        f = true;
+                    }
+                    if (itemSellsMatcher26.find()){
+                        agrarian.getSells().add(SellType.SPYRTOVA);
+                        f = true;
+                    }
+                    if (itemSellsMatcher27.find()){
+                        agrarian.getSells().add(SellType.MAKARONNA);
+                        f = true;
+                    }
+                    if (itemSellsMatcher28.find()){
+                        agrarian.getSells().add(SellType.PYVOVARNA);
+                        f = true;
+                    }
+                    if (itemSellsMatcher29.find()){
+                        agrarian.getSells().add(SellType.VYNOROBNA);
+                        f = true;
+                    }
+                    if (itemSellsMatcher30.find()){
+                        agrarian.getSells().add(SellType.KRUPY);
+                        f = true;
+                    }
+                    if (itemSellsMatcher31.find()){
+                        agrarian.getSells().add(SellType.KONSERVY);
+                        f = true;
+                    }
+                    if (itemSellsMatcher32.find()){
+                        agrarian.getSells().add(SellType.TUTUN);
+                        f = true;
+                    }
+                    if (itemSellsMatcher33.find()){
+                        agrarian.getSells().add(SellType.LIS_TA_VYROBY_Z_DEREVA);
+                        f = true;
+                    }
+                    if (itemSellsMatcher34.find()){
+                        agrarian.getSells().add(SellType.ROSLYNNYTSTVO);
+                        agrarian.getSells().add(SellType.TVARYNNYTSTVO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher35.find()){
+                        agrarian.getSells().add(SellType.BUDIVELNA_GALUZ_I_REMONT);
+                        f = true;
+                    }
+                    if (itemSellsMatcher36.find()){
+                        agrarian.getSells().add(SellType.NAFTA_I_PALYVO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher37.find()){
+                        agrarian.getSells().add(SellType.ZASOBY_ZAHYSTU);
+                        f = true;
+                    }
+                    if (itemSellsMatcher38.find()){
+                        agrarian.getSells().add(SellType.INSHA_SFERA);
+                        f = true;
+                    }
+                    if (itemSellsMatcher39.find()){
+                        agrarian.getSells().add(SellType.TRANSPORT);
+                        f = true;
+                    }
+                }
+                if (!f && !sells.trim().isEmpty()){
+                    Pattern itemSellsPattern40 = Pattern.compile(".*торг.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher40 = itemSellsPattern40.matcher(sells2);
+                    if (itemSellsMatcher40.find()){
+                        agrarian.getSells().add(SellType.INSHA_TORGIVLYA);
+                    } else {
+                        agrarian.getSells().add(SellType.INSHA_SFERA);
                     }
                 }
                 agrarian.setServices(paragraph.select("p").get(4).getElementsByIndexEquals(1).text());
                 agrarian.setArea(paragraph.select(".miniBlockCut p").get(0).lastElementChild().text());
-
                 String phone = paragraph.select(".miniBlockCut p").get(1).getElementsByIndexEquals(1).text();
-                Pattern p = Pattern.compile("[\s+]?[\\d\\s-()]+");
+                Pattern p = Pattern.compile("(?<=^|,|\\.|;|/)([^,;/.\\(]*(\\([^\\)]*\\))?[^,.;/\\(]*)*");
                 Matcher m = p.matcher(phone);
                 while (m.find()) {
                     String res= "";
+                    if (m.group().isEmpty()) continue;
                     if (Character.isWhitespace(m.group().charAt(0))){
                         res = m.group().substring(1);
                     } else {
                         res = m.group();
                     }
-                    if (res.isEmpty()) continue;
                     agrarian.getPhones().add(res);
-//                    if (res.length()>20) {
-//                        System.out.println(res + " " + agrarian.getTitle() + " " + agrarian.getOblast() + " " + agrarian.getOldRegion());
-//                    }
                 }
                 agrarian.setEmail(paragraph.select(".miniBlockCut p").get(2).getElementsByIndexEquals(1).text());
                 agrarian.setWebsite(paragraph.select(".miniBlockCut p").get(3).getElementsByIndexEquals(1).text());
@@ -327,7 +507,7 @@ public class ParserApplication {
                 villageCouncil.setTitle(paragraph.select("h3").text());
                 villageCouncil.setAddress(paragraph.select("p").get(0).text());
                 villageCouncil.setHead(paragraph.select("p").get(1).getElementsByIndexEquals(1).text());
-
+                boolean f = false;
                 String sells2 = paragraph.select("p").get(2).getElementsByIndexEquals(1).text();
                 String sells1 = sells2.replaceAll("\\*", "");
                 String sells = sells1.replaceAll("\\?", ",");
@@ -336,94 +516,281 @@ public class ParserApplication {
                 while (mSells.find()) {
                     String resS= "";
                     if (!mSells.group().trim().isEmpty()) {
-                        resS =mSells.group().trim();
+                        resS =mSells.group().trim().toLowerCase();
                     } else {
-                        resS = mSells.group();
+                        resS = mSells.group().toLowerCase();
                     }
                     if (resS.isEmpty()) continue;
-                    Pattern itemSellsPattern1 = Pattern.compile(".*зерн.*|.*пшен.*|.*пшон.*|соняшник|Соняшник|Подсолнечник|подсолнечник|.*жит.*|жыт|ячме.*|ячмі.*|Ячме.*|Ячмі.*|греч.*|Греч.*|просо|рипак|ріпак|рапс|куку.*|\\bЗерн.*|Зерн.*|кормові|комбікорми|Пшен|Пшон|Жит|Жыт|Овес|овес|Просо|Рипак|Ріпак|Рапс|Кукуру.*|технічні|Технічні|Технические|технические|Рожь|рожь|крупы|крупи|зенові|елеватор|Силос|Сіно|силос|сіно|цукров.*|Цукров.*|гірчи.*|Гірчи.*");
+                    Pattern itemSellsPattern1 = Pattern.compile("Рослинництво.*|рослинництв.*|растени.*|растериеводство|росл.*|хвоя|хвой.*|.*насінн.*|.*ландшафт.*|.*семен.*|семечки|сорго|.*ліан.*|.*лиан.*|киви|теплиц.*|тепличн.*|.*декоратив.*|.*декоритив.*|.*коренепл.*|.*корнепл.*|конопля|скловолокно|.*однорічн.*|.*дворічн.*|.*багаторічн.*|кореандр|коріандр|кориандр|посівн.* матеріал.*|насыння|.*лікарськ.*|.*трави.*|сосна.*|дуб|акація|ківі|.*отруби.*|післяурожайна.*|.*землеробство|.*вирщування с/г культур.*|швидкорастучі та якісні породи дерев", Pattern.CASE_INSENSITIVE);
                     Matcher itemSellsMatcher1 = itemSellsPattern1.matcher(resS);
-                    Pattern itemSellsPattern2 = Pattern.compile(".*твар.*|.*Твар.*|вівц.*|вівчарство|овц.*|Овц.*|баран.*|коров.*|коні|телят.*|Телят.*|свин.*|Свин.*|животнов.*|ВРХ|КРС|скотарст.*|худоб.*|зоопарк.*|овец.*|буйволи|молок.*|Молок.*|молоч.*|Молоч.*|мисливство|.*птиця|птиц.*|птахівн.*|перепілк.*|куре.*|курк.*|курч.*|бдж.*");
+                    Pattern itemSellsPattern2 = Pattern.compile(".*зерн.*|.*пшен.*|.*пшон.*|.*жит.*|жыт|ячм.*|греч.*|овес|просо|рожь|куку.*|кукру.*|бобов.*|бобві|боби|квасоля|соя.*|сої|сою|чечевица|сочевиц.*|горох|зенові|елеватор|рис|злак.*|висів.*|.*озим.*|ярих|маис|маїс|тритикале|фасоль|вівса", Pattern.CASE_INSENSITIVE);
                     Matcher itemSellsMatcher2 = itemSellsPattern2.matcher(resS);
-                    Pattern itemSellsPattern3 = Pattern.compile("риба|рыба|Риба|Рыба|рибу|Рибу|рибни.*|Рибни.*");
+                    Pattern itemSellsPattern3 = Pattern.compile("технічн.*|технически.*|комбікорми|корм.*|жмих|цукровий буряк|цукрові буряки|цукровий завод|.*олійн.*|.*масляничн.*|.*маслянічн.*|.*маслич.*|семечка|подсолн.*|.*сонячни.*|.*соняшни.*|рицина|рипак|рапс|ріпак|суріпа|рижій|гірчи.*|.*горчи.*|мак|кунжут|арахіс|перила|лялеманція|сафлор|ефіроолійн.*|коріандр|кмин|м'ята|шавлія|лаванда|фенхель|аніс|прядивні|льон|лен|коноплі|бавовник|силос|сіно|сено|солома|люцерн.*|еспарцет|.*рижій.*|.*рижію.*|суданка", Pattern.CASE_INSENSITIVE);
                     Matcher itemSellsMatcher3 = itemSellsPattern3.matcher(resS);
-                    Pattern itemSellsPattern4 = Pattern.compile("Рослинництво.*|рослинництв.*|растениев*|растериеводство|росл.*|хвоя");
+                    Pattern itemSellsPattern4 = Pattern.compile("кормові|макух.*|жмих.*|жмых.*", Pattern.CASE_INSENSITIVE);
                     Matcher itemSellsMatcher4 = itemSellsPattern4.matcher(resS);
-                    Pattern itemSellsPattern5 = Pattern.compile("м'ясо|мясо|Мясо|М'ясо|М’ясо|м’ясо|м\"ясо|Ковбас.*|ковбас.*|Ялович.*|ялович.*|ліверн.*|сосиски|сардельки|м'ясн.*");
+                    Pattern itemSellsPattern5 = Pattern.compile("овоч.*|овощ.*|томат.*|.*помідо.*|помидор.*|карто.*|капус.*|свекл.*|морк.*|огур.*|огір.*|цибул.*|буряк.*|гриб.*|печериці|кабач.*|репа|баклажан.*|лук.*|зелень.*|укроп|петрушка|кинза|шпинат|щавель|руккола|салат|мята|базилик|.*бульбоплод.*|.*перець.*|селера|редиска|картапля|часник|чеснок|редис.*", Pattern.CASE_INSENSITIVE);
                     Matcher itemSellsMatcher5 = itemSellsPattern5.matcher(resS);
-                    Pattern itemSellsPattern6 = Pattern.compile("садівництво|сад.*|Садівництво|Сад.*|Яблуні|яблуні|фрукт.*|Фрукт.*|кавун|овочі|овоч.*|Овоч.*|Овощ.*|овощ.*|Томат.*|томат.*|картоп.*|Картоп.*|капуст.*|Капуст.*|Свекла|свекла|морков.*|Морков.*|огур.*|Огур.*|цибул.*|Цибул.*|буряк.*|Буряк.*|бобові|соя|Соя|горох|Горох|виноград|Виноград|гриб.*|Гриб.*|ягод.*|Ягод.*|клубни.*|Клубни.*|малин.*|Малин.*|суни.*|лохин.*|кісточк.*|Суни.*|Лохин.*|Кісточк.*");
+                    Pattern itemSellsPattern6 = Pattern.compile("кавун.*|диня|дині|дыня|.*арбуз.*|баштан.*|.*бахч.*|тыкв.*", Pattern.CASE_INSENSITIVE);
                     Matcher itemSellsMatcher6 = itemSellsPattern6.matcher(resS);
-                    Pattern itemSellsPattern7 = Pattern.compile("ліс.*|Ліс.*");
+                    Pattern itemSellsPattern7 = Pattern.compile("сад.*|ябл.*|фрукт.|ягод.*|.*ягід.*|клубни.*|.*полуни.*|лохин.*|поричка.*|ожина|журавлина|чорниця|горобина|ежевика|алича|.*обліп.*|суниц.*|малин.*|смород.*|хмель|хміль|саженцы|кісточк.*|.*косточков.*|плодов.*|плоди|вишн.*|груш.*|земляни.*|сливы|сливу|сливи|.*слива|.*черешн.*|плодівниц.*|.*горіх.*|плоды.*|абрикос|персик|цитрусових|сажанці|кустарники|питомник|аґрус|жимолость|орехи", Pattern.CASE_INSENSITIVE);
                     Matcher itemSellsMatcher7 = itemSellsPattern7.matcher(resS);
-                    Pattern itemSellsPattern8 = Pattern.compile("олія.*|олій.*|Олія.*|Олій.*|консер.*|тютю.*|Консер.*|Тютю.*|пиво|Пиво");
+                    Pattern itemSellsPattern8 = Pattern.compile("виноград.*|виниград", Pattern.CASE_INSENSITIVE);
                     Matcher itemSellsMatcher8 = itemSellsPattern8.matcher(resS);
-                    boolean f = false;
+                    Pattern itemSellsPattern9 = Pattern.compile("квіт.*|квытыв|рози|розы|цветы|троянди", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher9 = itemSellsPattern9.matcher(resS);
+                    Pattern itemSellsPattern10 = Pattern.compile(".*твар.*|тванинництво|животнов.*|зоопарк.*|мисливство|шерсть|кози|кіз|кроли.*|.*сперм.*|.*крол.*|.*равлик.*|ферма|.*страус.*|звіроловство|.*вовн.*");
+                    Matcher itemSellsMatcher10 = itemSellsPattern10.matcher(resS);
+                    Pattern itemSellsPattern11 = Pattern.compile("скот.*|коров.*|коні|.*коне.*|телят.*|худоб.*|ВРХ|врх|крх|крс|КРС|буйволи|кінний туризм|пасовища|конярство|кіннозаводство|продукція конярства", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher11 = itemSellsPattern11.matcher(resS);
+                    Pattern itemSellsPattern12 = Pattern.compile("свин.*|.*поросят.*|хряки|ландрас.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher12 = itemSellsPattern12.matcher(resS);
+                    Pattern itemSellsPattern13 = Pattern.compile("вівц.*|вівчарств.*|овц.*|баран.*|овец.*|овеч.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher13 = itemSellsPattern13.matcher(resS);
+                    Pattern itemSellsPattern14 = Pattern.compile(".*птиця|птиц.*|пттиця|птах.*|перепілк.*|.*перепеляч.*|куре.*|курк.*|курч.*|.*яйц.*|яєць|інкуба.*|инкубац.*|бролери|бройл.*|уток|гус.*|.*качки.*|.*качок.*|каченят|качині|кури|куря.*|.*пташинниц.*|циплята|звірі", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher14 = itemSellsPattern14.matcher(resS);
+//                    Pattern itemSellsPattern15 = Pattern.compile("ліс.*|Ліс.*");
+//                    Matcher itemSellsMatcher15 = itemSellsPattern15.matcher(resS);
+                    Pattern itemSellsPattern16 = Pattern.compile("бдж.*|мед|пчолосім.*|.*пасіка.*|пчело.*|.*вуликів.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher16 = itemSellsPattern16.matcher(resS);
+                    Pattern itemSellsPattern17 = Pattern.compile(".*харч.*|.*олія.*|.*олії.*|олію|.*круп.*|.*кулинарный.*|соки|.*вода.*|.*воду.*|.*води.*|квас|.*напо.*|чай|жири|оцет|.*пищевое.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher17 = itemSellsPattern17.matcher(resS);
+                    Pattern itemSellsPattern18 = Pattern.compile("м'яс.*|мяс.*|м’яс.*|м\"яс.*|.*м‘яса.*|ковбас.*|ялович.*|ліверн.*|сосиски|сардельки|м'ясн.*|говядина|копченос.*|бекон", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher18 = itemSellsPattern18.matcher(resS);
+                    Pattern itemSellsPattern19 = Pattern.compile(".*риб.*|.*рыб.*|.*ставкове господарство|білого амура|товстолоба|судака|сома|щуки|осетер.*|білуга|стерлядь|севрюга|.*аквакультура.*|морепродукти|.*ракопод.*|.*молюск.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher19 = itemSellsPattern19.matcher(resS);
+                    Pattern itemSellsPattern20 = Pattern.compile(".*борошн.*|мука|муку", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher20 = itemSellsPattern20.matcher(resS);
+                    Pattern itemSellsPattern21 = Pattern.compile("цукор|сахар|.*цукру.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher21 = itemSellsPattern21.matcher(resS);
+                    Pattern itemSellsPattern22 = Pattern.compile("молок.*|молоч.*|.*сири|сир|бринза|вершки|кефір|кумис.*|кумыс", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher22 = itemSellsPattern22.matcher(resS);
+                    Pattern itemSellsPattern23 = Pattern.compile("хліб.*|хлеб.*|пекарня", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher23 = itemSellsPattern23.matcher(resS);
+                    Pattern itemSellsPattern24 = Pattern.compile("масло|масла", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher24 = itemSellsPattern24.matcher(resS);
+                    Pattern itemSellsPattern25 = Pattern.compile("кондитер.*|торт.*|тістеч.*|печив.*|булоч.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher25 = itemSellsPattern25.matcher(resS);
+                    Pattern itemSellsPattern26 = Pattern.compile("спирт.*|.*алкогольн.*|коняк|бренді", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher26 = itemSellsPattern26.matcher(resS);
+                    Pattern itemSellsPattern27 = Pattern.compile("макаро.*|бакалія", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher27 = itemSellsPattern27.matcher(resS);
+                    Pattern itemSellsPattern28 = Pattern.compile("пиво", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher28 = itemSellsPattern28.matcher(resS);
+                    Pattern itemSellsPattern29 = Pattern.compile("вино|вина|винпродукція", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher29 = itemSellsPattern29.matcher(resS);
+                    Pattern itemSellsPattern30 = Pattern.compile("крупи|крупы", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher30 = itemSellsPattern30.matcher(resS);
+                    Pattern itemSellsPattern31 = Pattern.compile("консер.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher31 = itemSellsPattern31.matcher(resS);
+                    Pattern itemSellsPattern32 = Pattern.compile("тютю.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher32 = itemSellsPattern32.matcher(resS);
+                    Pattern itemSellsPattern33 = Pattern.compile("ліс.*|лес|дрова|пиломатеріали|дерево|.*древесина.*|.*столяр.*|.*деревин.*|.*дошка.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher33 = itemSellsPattern33.matcher(resS);
+                    Pattern itemSellsPattern34 = Pattern.compile("змішане сільське господарство|.*сільськогоспод.*|.*выращивания сельскохозяйственных культур|.*виробництво, переробка та реалізація с/г продукції.*|продукція змішаного сільського господар-ства|змішане сільське господар-ство", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher34 = itemSellsPattern34.matcher(resS);
+                    Pattern itemSellsPattern35 = Pattern.compile(".*будів.*|.*кірпіч.*|.*пісок.*|.*піск.*|.*граві.*|глину.*|глина.*|.*каолін.*|.*цегл.*|.*строит.*|.*строительн.*|.*підлогу, матеріали покриття.*|.*Плити труби іншіі вироби із пластмаси.*|.*мебе.*|.*мебл.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher35 = itemSellsPattern35.matcher(resS);
+                    Pattern itemSellsPattern36 = Pattern.compile(".*нафт.*|.*паливо.*|.*пальним.*|.*вугіл.*|.*торговля топливом.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher36 = itemSellsPattern36.matcher(resS);
+                    Pattern itemSellsPattern37 = Pattern.compile(".*засоби.* захисту.*|.*хімі.*|.*добрива.*|.*хімпрод.*|.*удобрени.*|.*сзр.*|.*хім продукти.*|трихограму", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher37 = itemSellsPattern37.matcher(resS);
+                    Pattern itemSellsPattern38 = Pattern.compile(".*інша сфера.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher38 = itemSellsPattern38.matcher(resS);
+                    Pattern itemSellsPattern39 = Pattern.compile(".*транспорт.*|.*перевез.*|подшипники|сальник|ремни|смазки|звездочки|.*машинами.*|.*мащини.*|.*автомоб.*|навантажувачі|.*технік.*|.*трактор.*|.*комбайн.*|.*запчаст.*|сельхоз технику|.*Аренда и лизинг сельскохозяйственной техники и оборудования.*|.*с/х техника.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher39 = itemSellsPattern39.matcher(resS);
+
                     if (itemSellsMatcher1.find()){
-                        villageCouncil.getSells().add(SellType.ZERNO);
-                        f = true;
-                    }
-                    if (itemSellsMatcher2.find()){
-                        villageCouncil.getSells().add(SellType.TVARYNNYTSTVO);
-                        f = true;
-                    }
-                    if (itemSellsMatcher3.find()){
-                        villageCouncil.getSells().add(SellType.RYBA);
-                        f = true;
-                    }
-                    if (itemSellsMatcher4.find()){
                         villageCouncil.getSells().add(SellType.ROSLYNNYTSTVO);
                         f = true;
                     }
+                    if (itemSellsMatcher2.find()){
+                        villageCouncil.getSells().add(SellType.ZERNOVI);
+                        f = true;
+                    }
+                    if (itemSellsMatcher3.find()){
+                        villageCouncil.getSells().add(SellType.TEKHNICHNI);
+                        f = true;
+                    }
+                    if (itemSellsMatcher4.find()){
+                        villageCouncil.getSells().add(SellType.KORMOVI);
+                        f = true;
+                    }
                     if (itemSellsMatcher5.find()){
-                        villageCouncil.getSells().add(SellType.MYASO);
+                        villageCouncil.getSells().add(SellType.OVOCHEVI);
                         f = true;
                     }
                     if (itemSellsMatcher6.find()){
-                        villageCouncil.getSells().add(SellType.SADIVNYTSTVO);
+                        villageCouncil.getSells().add(SellType.BASHTANNI);
                         f = true;
                     }
 
                     if (itemSellsMatcher7.find()){
-                        villageCouncil.getSells().add(SellType.WOOD);
+                        villageCouncil.getSells().add(SellType.SADIVNYTSTVO);
                         f = true;
                     }
                     if (itemSellsMatcher8.find()){
+                        villageCouncil.getSells().add(SellType.VYNOGRADARSTVO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher9.find()){
+                        villageCouncil.getSells().add(SellType.KVITKARSTVO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher10.find()){
+                        villageCouncil.getSells().add(SellType.TVARYNNYTSTVO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher11.find()){
+                        villageCouncil.getSells().add(SellType.SKOTARSTVO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher12.find()){
+                        villageCouncil.getSells().add(SellType.SVYNARSTVO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher13.find()){
+                        villageCouncil.getSells().add(SellType.VIVCHARSTVO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher14.find()){
+                        villageCouncil.getSells().add(SellType.PTAKHIVNYTSTVO);
+                        f = true;
+                    }
+//                    if (itemSellsMatcher15.find()){
+//                        agrarian.getSells().add(SellType.RYBNYTSTVO);
+//                        f = true;
+//                    }
+                    if (itemSellsMatcher16.find()){
+                        villageCouncil.getSells().add(SellType.BJILNYTSTVO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher17.find()){
                         villageCouncil.getSells().add(SellType.HARCHOVA_PROMYSLOVIST);
                         f = true;
                     }
-                    if (!f){
-                        System.out.println(resS);
+                    if (itemSellsMatcher18.find()){
+                        villageCouncil.getSells().add(SellType.MYASO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher19.find()){
+                        villageCouncil.getSells().add(SellType.RYBA);
+                        f = true;
+                    }
+                    if (itemSellsMatcher20.find()){
+                        villageCouncil.getSells().add(SellType.BOROSHNO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher21.find()){
+                        villageCouncil.getSells().add(SellType.TSUKOR);
+                        f = true;
+                    }
+                    if (itemSellsMatcher22.find()){
+                        villageCouncil.getSells().add(SellType.MOLOKO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher23.find()){
+                        villageCouncil.getSells().add(SellType.HLIB);
+                        f = true;
+                    }
+                    if (itemSellsMatcher24.find()){
+                        villageCouncil.getSells().add(SellType.MASLO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher25.find()){
+                        villageCouncil.getSells().add(SellType.KONDYTERSKA);
+                        f = true;
+                    }
+                    if (itemSellsMatcher26.find()){
+                        villageCouncil.getSells().add(SellType.SPYRTOVA);
+                        f = true;
+                    }
+                    if (itemSellsMatcher27.find()){
+                        villageCouncil.getSells().add(SellType.MAKARONNA);
+                        f = true;
+                    }
+                    if (itemSellsMatcher28.find()){
+                        villageCouncil.getSells().add(SellType.PYVOVARNA);
+                        f = true;
+                    }
+                    if (itemSellsMatcher29.find()){
+                        villageCouncil.getSells().add(SellType.VYNOROBNA);
+                        f = true;
+                    }
+                    if (itemSellsMatcher30.find()){
+                        villageCouncil.getSells().add(SellType.KRUPY);
+                        f = true;
+                    }
+                    if (itemSellsMatcher31.find()){
+                        villageCouncil.getSells().add(SellType.KONSERVY);
+                        f = true;
+                    }
+                    if (itemSellsMatcher32.find()){
+                        villageCouncil.getSells().add(SellType.TUTUN);
+                        f = true;
+                    }
+                    if (itemSellsMatcher33.find()){
+                        villageCouncil.getSells().add(SellType.LIS_TA_VYROBY_Z_DEREVA);
+                        f = true;
+                    }
+                    if (itemSellsMatcher34.find()){
+                        villageCouncil.getSells().add(SellType.ROSLYNNYTSTVO);
+                        villageCouncil.getSells().add(SellType.TVARYNNYTSTVO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher35.find()){
+                        villageCouncil.getSells().add(SellType.BUDIVELNA_GALUZ_I_REMONT);
+                        f = true;
+                    }
+                    if (itemSellsMatcher36.find()){
+                        villageCouncil.getSells().add(SellType.NAFTA_I_PALYVO);
+                        f = true;
+                    }
+                    if (itemSellsMatcher37.find()){
+                        villageCouncil.getSells().add(SellType.ZASOBY_ZAHYSTU);
+                        f = true;
+                    }
+                    if (itemSellsMatcher38.find()){
+                        villageCouncil.getSells().add(SellType.INSHA_SFERA);
+                        f = true;
+                    }
+                    if (itemSellsMatcher39.find()){
+                        villageCouncil.getSells().add(SellType.TRANSPORT);
+                        f = true;
+                    }
+                }
+                if (!f && !sells.trim().isEmpty()){
+                    Pattern itemSellsPattern40 = Pattern.compile(".*торг.*", Pattern.CASE_INSENSITIVE);
+                    Matcher itemSellsMatcher40 = itemSellsPattern40.matcher(sells2);
+                    if (itemSellsMatcher40.find()){
+                        villageCouncil.getSells().add(SellType.INSHA_TORGIVLYA);
+                    } else {
+                        villageCouncil.getSells().add(SellType.INSHA_SFERA);
                     }
                 }
                 villageCouncil.setServices(paragraph.select("p").get(4).getElementsByIndexEquals(1).text());
                 villageCouncil.setArea(paragraph.select(".miniBlockCut p").get(0).lastElementChild().text());
 
                 String phone = paragraph.select(".miniBlockCut p").get(1).getElementsByIndexEquals(1).text();
-                Pattern p = Pattern.compile("[\s+]?[\\d\\s-()]+");
+                Pattern p = Pattern.compile("(?<=^|,|\\.|;|/)([^,;/.\\(]*(\\([^\\)]*\\))?[^,.;/\\(]*)*");
                 Matcher m = p.matcher(phone);
                 while (m.find()) {
                     String res= "";
+                    if (res.isEmpty()) continue;
                     if (Character.isWhitespace(m.group().charAt(0))){
                         res = m.group().substring(1);
                     } else {
                         res = m.group();
                     }
-                    if (res.isEmpty()) continue;
                     villageCouncil.getPhones().add(res);
-//                    if (res.length()>20) {
-//                        System.out.println(res + " " + agrarian.getTitle() + " " + agrarian.getOblast() + " " + agrarian.getOldRegion());
-//                    }
                 }
                 villageCouncil.setEmail(paragraph.select(".miniBlockCut p").get(2).getElementsByIndexEquals(1).text());
                 villageCouncil.setWebsite(paragraph.select(".miniBlockCut p").get(3).getElementsByIndexEquals(1).text());
                 villageCouncil.setVillageCouncil(paragraph.select(".miniBlockCut p").get(4).getElementsByIndexEquals(1).text());
+
                 villageCouncils.add(villageCouncil);
             }
         }
-    }
-
-    public static void checkEnumType(String s){
-
     }
 
     public static void downloadImage(String imageUrl) {
